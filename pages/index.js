@@ -1,19 +1,19 @@
 import React from "react";
-import useFetchData from "@hooks/useFetchData";
 import ProductList from "@components/ProductList";
-import { Apple, FruitStand } from "@components/SVGIcons";
+import { FruitStand } from "@components/SVGIcons";
 
-const Home = () => {
-  const [{ data, isLoading, error }, setUrl] = useFetchData("/api/fruits", []);
+export const getStaticProps = async () => {
+  const response = await fetch("https://next-fruits.vercel.app/api/fruits");
+  const { fruits } = await response.json();
 
-  if (isLoading) {
-    return <h1>Loading...</h1>; // TODO: add a spinner component
-  }
+  return {
+    props: {
+      fruits,
+    },
+  };
+};
 
-  if (error) {
-    return <h1>{error.message}</h1>; // TODO: add an error component
-  }
-
+const Home = ({ fruits }) => {
   return (
     <main>
       <section className="title">
@@ -21,7 +21,7 @@ const Home = () => {
           Exotic <FruitStand size="40px" /> Fruits
         </h1>
       </section>
-      <ProductList products={data.fruits} />
+      <ProductList products={fruits} />
 
       <style jsx>{`
         .title {
@@ -43,15 +43,3 @@ const Home = () => {
 };
 
 export default Home;
-
-{
-  /* <ul>
-    {data.fruits.map(fruit => (
-      <li>
-        <img src={fruit.image} alt="fruit image" />
-        <p>{fruit.name}</p>
-      </li>
-    ))}
-  </ul> 
-*/
-}

@@ -1,28 +1,33 @@
-import React, { useEffect } from "react";
-import { useRouter } from "next/router";
+import React from "react";
 import ProductDetails from "@components/ProductDetails";
-import useFetchData from "@hooks/useFetchData";
 
-const Product = () => {
-  const router = useRouter();
-  const { id } = router.query;
-  const [{ data, isLoading, error }, setUrl] = useFetchData(
-    `/api/fruits/${id}`,
-    []
+export const getStaticPaths = async () => {
+  const response = await fetch("https://next-fruits.vercel.app/api/fruits");
+  const { fruits } = await response.json();
+
+  const paths = fruits.map(({ id }) => ({ params: { id } }));
+
+  return {
+    paths,
+    fallback: false,
+  };
+};
+
+export const getStaticProps = async ({ params }) => {
+  const response = await fetch(
+    `https://next-fruits.vercel.app/api/fruits/${params.id}`
   );
+  const fruit = await response.json();
 
-  useEffect(() => {
-    setUrl(`/api/fruits/${id}`);
-  }, [id]);
+  return {
+    props: {
+      fruit,
+    },
+  };
+};
 
-  if (isLoading) {
-    return <h1>Loading...</h1>; // TODO: add a spinner component
-  }
-
-  if (error) {
-    return <h1>{error.message}</h1>; // TODO: add an error component
-  }
-  return <main>{data ? <ProductDetails product={data} /> : null}</main>;
+const Product = ({ fruit }) => {
+  return <main>{fruit ? <ProductDetails product={fruit} /> : null}</main>;
 };
 
 export default Product;
