@@ -14,7 +14,7 @@ const Navbar = () => {
           <p>Products</p>
         </a>
       </Link>
-      <Link href="/about">
+      <Link href="/basket">
         <a>
           <Basket size="38px" />
           <p>Basket ({totalProducts > 99 ? "99+" : totalProducts})</p>
